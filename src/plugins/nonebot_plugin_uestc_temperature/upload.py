@@ -41,18 +41,19 @@ class Reporter:
         if status == None:
             return (False, "invalid cookie")
         elif status["appliedTimes"] != 0:
-            return (True, "duplicated")
+            return (True, "重复填报")
         elif status["schoolStatus"] == 0:
-            response = self.__request("unreturned")
+            return (False,"离校期间，请自行填报或者启用离校填报功能")
+            #response = self.__request("unreturned")
         elif status["schoolStatus"] == 1:
             response = self.__request("returned")
         else:
-            return (False, "invalid status")
+            return (False, "无效状态")
 
         if response["data"] == True:
-            return (True, "success")
+            return (True, "成功")
         else:
-            return (False, "invalid data")
+            return (False, "无效数据")
 
 
 if __name__ == "__main__":
