@@ -39,7 +39,7 @@ class Reporter:
         status = self.__request("status")["data"]
 
         if status == None:
-            return (False, "invalid cookie")
+            return (False, "无效Session id")
         elif status["appliedTimes"] != 0:
             return (True, "重复填报")
         elif status["schoolStatus"] == 0:
