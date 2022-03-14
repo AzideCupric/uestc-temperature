@@ -12,6 +12,6 @@ async def upload_temperature(bot: Bot, event: MessageEvent, key: Message = Arg()
     session_id = str(key)
     reporter = Reporter(session_id)
     result, state = reporter.run()
-    msg=f"填报状态：{state}"+"请自行手动填报" if not result else ''
+    msg=f"填报状态：{state}\n"+"请自行手动填报" if not result else ''
     logger.info(f"{msg}")
     await temperature.finish(Message(msg))
