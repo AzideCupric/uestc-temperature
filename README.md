@@ -25,6 +25,7 @@
 
 - 部署您的 _nonebot_机器人：前往nonebot的[官方网站](https://v2.nonebot.dev)
 - 将本仓库中的`src/plugins`目录下的`nonebot_plugin_uestc_temperature`文件夹拷贝至您部署好的nonebot的插件目录下
+- 安装使用到的python包：`requests`
 - 在nonebot部署目录下的`bot.py`文件中启用该插件（请到nonebot的[官方网站](https://v2.nonebot.dev)学习启用方法）
 - 向机器人发送`体温上报`命令，并提供SessionId完成体温填报
 ## FAQ
