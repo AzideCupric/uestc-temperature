@@ -1,4 +1,3 @@
-from unittest import result
 from nonebot.plugin import on_command
 from nonebot.params import ArgStr
 from nonebot.rule import to_me
@@ -14,7 +13,7 @@ temperature = on_command("体温上报", rule=to_me())
 async def upload_temperature(session_id: str = ArgStr()):
     logger.info(f"get id:{session_id}")
     reporter = Reporter(session_id)
-    await temperature.send(Message(f"已接收key:{session_id}"))
+    await temperature.send(Message(f"已接收:{session_id}"))
     result, state = await reporter.run()
     msg = f"填报状态：{state}\n" + ("请自行手动填报" if not result else "")
     logger.info(f"{msg}")
