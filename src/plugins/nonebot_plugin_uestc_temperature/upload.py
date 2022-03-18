@@ -59,7 +59,7 @@ class Reporter:
         else:
             return False, "无效状态"
 
-        if response["data"] == True:
+        if response["status"] == True:
             return True, "成功"
         else:
             return False, "无效数据"
