@@ -4,27 +4,39 @@ import os
 import requests
 from urllib3 import Retry
 
+site_json_path = os.path.dirname(__file__)
+
 
 class Reporter:
+    """
+    上报体温信息
+    """
+
     def __init__(self, cookie: str) -> None:
-        self.__create_session(cookie)
         self.__read_sites()
+        self.__init_session(cookie)
 
     def __read_sites(self) -> None:
-        with open(os.path.join("src", "sites.json"), "r", encoding="utf-8") as fr:
+        # with open(os.path.join("src", "plugins", "nonebot_plugin_uestc_temperature", "sites.json"), "r", encoding="utf-8") as fr:
+        with open(
+            os.path.join(site_json_path, "sites.json"), "r", encoding="utf-8"
+        ) as fr:
             self.__sites = json.load(fr)
 
-    def __create_session(self, cookie: str) -> None:
+    def __init_session(self, cookie: str) -> None:
         self.__session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(
-            max_retries=Retry(total=50, backoff_factor=0.1)
+            max_retries=Retry(
+                total=50, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]
+            )
         )
+        self.__session.mount("http://", adapter)
         self.__session.mount("https://", adapter)
         self.__session.cookies.update({"SESSION": cookie})
         self.__session.headers.update({"content-type": "application/json"})
 
     def __request(self, api: str) -> dict:
-        site: dict = self.__sites[api]
+        site = self.__sites[api]
         return self.__session.request(
             method=site["method"],
             url=site["url"],
@@ -36,20 +48,21 @@ class Reporter:
         status = self.__request("status")["data"]
 
         if status == None:
-            return False, "invalid cookie"
+            return False, "无效Session id"
         elif status["appliedTimes"] != 0:
-            return True, "duplicated"
+            return (True, "重复填报")
         elif status["schoolStatus"] == 0:
-            response = self.__request("unreturned")
+            return False, "离校期间，请自行填报或者修改源代码启用离校填报功能"
+            # response = self.__request("unreturned")
         elif status["schoolStatus"] == 1:
             response = self.__request("returned")
         else:
-            return False, "invalid status"
+            return False, "无效状态"
 
-        if response["data"] == True:
-            return True, "success"
+        if response["status"] == True:
+            return True, "成功"
         else:
-            return False, "invalid data"
+            return False, "无效数据"
 
 
 if __name__ == "__main__":
