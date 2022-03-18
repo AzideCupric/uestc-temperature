@@ -4,14 +4,19 @@ import os
 import requests
 from urllib3 import Retry
 
+site_json_path = os.path.dirname(__file__)
 
 class Reporter:
+    '''
+    上报体温信息
+    '''
     def __init__(self, cookie: str) -> None:
         self.__read_sites()
         self.__init_session(cookie)
 
     def __read_sites(self) -> None:
-        with open("./sites.json", "r", encoding="utf-8") as fr:
+        #with open(os.path.join("src", "plugins", "nonebot_plugin_uestc_temperature", "sites.json"), "r", encoding="utf-8") as fr:
+        with open(os.path.join(site_json_path,"sites.json"), "r", encoding="utf-8") as fr:
             self.__sites = json.load(fr)
 
     def __init_session(self, cookie: str) -> None:
@@ -39,21 +44,21 @@ class Reporter:
         status = self.__request("status")["data"]
 
         if status == None:
-            return (False, "无效Session id")
+            return False, "无效Session id"
         elif status["appliedTimes"] != 0:
             return (True, "重复填报")
         elif status["schoolStatus"] == 0:
-            return (False,"离校期间，请自行填报或者启用离校填报功能")
+            return False,"离校期间，请自行填报或者启用离校填报功能"
             #response = self.__request("unreturned")
         elif status["schoolStatus"] == 1:
             response = self.__request("returned")
         else:
-            return (False, "无效状态")
+            return False, "无效状态"
 
         if response["data"] == True:
-            return (True, "成功")
+            return True, "成功"
         else:
-            return (False, "无效数据")
+            return False, "无效数据"
 
 
 if __name__ == "__main__":
