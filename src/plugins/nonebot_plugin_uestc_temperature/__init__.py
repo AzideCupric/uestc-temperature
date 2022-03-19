@@ -14,7 +14,7 @@ async def upload_temperature(session_id: str = ArgStr()):
     logger.info(f"get id:{session_id}")
     reporter = Reporter(session_id)
     await temperature.send(Message(f"已接收:{session_id}"))
-    result, state = await reporter.run()
+    result, state = reporter.run()
     msg = f"填报状态：{state}\n" + ("请自行手动填报" if not result else "")
     logger.info(f"{msg}")
     await temperature.finish(Message(msg))
