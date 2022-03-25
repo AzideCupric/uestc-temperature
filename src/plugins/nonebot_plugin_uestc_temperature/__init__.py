@@ -18,6 +18,9 @@ temperature = on_command("体温上报", rule=to_me())
 
 @temperature.handle()
 async def upload_temperature(user: Message = CommandArg()):
+    if not user:
+        logger.info("接收到空的用户名 已拒绝")
+        await updateID.finish(Message("请在 体温上报 命令后加上需要更新的用户名\n例：体温上报 kaltsit"))
     logger.debug(f"Get user:{user}")
     user_data = loadData(str(user))
     if user_data["Sid"] == "err-404":
