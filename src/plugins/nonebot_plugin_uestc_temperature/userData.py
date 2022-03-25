@@ -1,5 +1,6 @@
-import json, os, time
-
+import json, os
+from datetime import datetime,timedelta,timezone
+import time
 from nonebot import logger
 
 user_json_path = os.path.join(os.path.dirname(__file__), "user.json")
@@ -7,7 +8,9 @@ user_json_path = os.path.join(os.path.dirname(__file__), "user.json")
 
 def updateData(user: str, Sid: str) -> bool:
     """追加新的user数据并打上时间戳"""
-    nowtime = int(time.time())
+    tz_utc_8 = timezone(timedelta(hours=8))
+    now = datetime.now(tz=tz_utc_8)
+    nowtime = int(now.timestamp())
     newUser = {user: {"Sid": Sid, "updateTime": nowtime}}
     try:
         if os.path.getsize(user_json_path) == 0:
@@ -15,7 +18,7 @@ def updateData(user: str, Sid: str) -> bool:
                 json.dump(newUser, ud, indent=4, ensure_ascii=False)
 
         else:
-            allUser = {}
+            allUser:dict = {}
 
             with open(user_json_path, "r", encoding="utf-8") as ud_load:
                 allUser:dict = json.load(ud_load)
@@ -37,13 +40,16 @@ def loadData(user: str) -> dict:
     #### 按照所记录的user查找数据 返回字典{Sid,updateTime}
     #### 查找失败则返回'Sid':'err-404','updateTime':0
     '''
+    err_user={'Sid':'err-404','updateTime':0}
+    if os.path.getsize(user_json_path) == 0:
+        return err_user
     with open(user_json_path, "r", encoding="utf-8") as ud_load:
         allUser = json.load(ud_load)
     try:
         getUser = allUser[user]
     except Exception as e:
         logger.error(repr(e))
-        return {'Sid':'err-404','updateTime':0}
+        return err_user
     else:
         return getUser
 

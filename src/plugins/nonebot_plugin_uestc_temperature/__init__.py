@@ -15,11 +15,11 @@ temperature = on_command("体温上报", rule=to_me())
 
 
 @temperature.handle()
-async def upload_temperature(user: str = CommandArg()):
-    logger.info(f"Get user:{user}")
-    user_data = loadData(user)
+async def upload_temperature(user: Message = CommandArg()):
+    logger.debug(f"Get user:{user}")
+    user_data = loadData(str(user))
     if user_data["Sid"] == "err-404":
-        msg = f"不存在用户：{user}\n请使用 添加填报人 命令添加"
+        msg = f"不存在用户：{user}\n请使用 更新id 命令添加"
     else:
         logger.info(f"Get user session id:{user_data['Sid']}")
         reporter = Reporter(user_data["Sid"])
@@ -40,9 +40,12 @@ updateID = on_command("更新id", rule=to_me())
 
 
 @updateID.handle()
-async def get_user_name(state: T_State, user_name: str = CommandArg()):
-    logger.info(f"get name:{user_name}")
-    user = loadData(user_name)
+async def get_user_name(state: T_State, user_name: Message = CommandArg()):
+    if not user_name:
+        logger.info("接收到空的用户名 已拒绝")
+        await updateID.finish(Message("请在 更新ID 命令后加上需要更新的用户名\n例：更新id amiya"))
+    logger.debug(f"get name:{user_name}")
+    user = loadData(str(user_name))
     if user["Sid"] == "err-404":
         await updateID.send(
             Message(f"不存在的用户：{user_name},继续发送Session Id将自动添加该用户\n或者发送 取消 中止")
@@ -51,7 +54,7 @@ async def get_user_name(state: T_State, user_name: str = CommandArg()):
         TimeStr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(user["updateTime"]))
         Sid = user["Sid"]
         await updateID.send(
-            Message(f"{user_name}\n上次更新Session Id:{Sid}\n的时间为{TimeStr}")
+            Message(f"{user_name}\nSession Id:{Sid}\n上次更新时间:{TimeStr}")
         )
     state["update_user_name"] = user_name
 
@@ -65,8 +68,8 @@ async def update_id(state: T_State, session_id: str = ArgStr()):
     if not re_result:
         logger.info(f"reject {session_id}")
         await updateID.reject(Message("输入的数据不满足SessionId格式！请检查后再次输入"))
-    logger.info(f"get id:{session_id}")
-    update_user_name = state["update_user_name"]
+    logger.debug(f"get id:{session_id}")
+    update_user_name = str(state["update_user_name"])
     status = updateData(update_user_name, session_id)
     assert loadData(update_user_name)["Sid"] == session_id
     await updateID.send(Message(f"更新情况:{update_user_name} {status}"))
