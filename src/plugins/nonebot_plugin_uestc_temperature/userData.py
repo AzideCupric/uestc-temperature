@@ -52,6 +52,34 @@ def loadData(user: str) -> dict:
     else:
         return getUser
 
+def listUser() -> list:
+    '''返回储存的所有用户:[(name,{sid,updateTime}) , ...]'''
+    if os.path.getsize(user_json_path) == 0:
+        return
+    with open(user_json_path, "r", encoding="utf-8") as ud_load:
+        allUser:dict = json.load(ud_load)
+    return allUser.items()
+
+def delUser(user:str) -> dict:
+    '''删除指定的用户条目数据'''
+    if os.path.getsize(user_json_path) == 0:
+        return
+    try:
+        with open(user_json_path, "r", encoding="utf-8") as ud_load:
+            allUser:dict = json.load(ud_load)
+        
+        del_info=allUser.pop(user)
+
+        with open(user_json_path, "w", encoding="utf-8") as ud_write:
+            json.dump(allUser, ud_write, indent=4, ensure_ascii=False)
+
+    except Exception as e:
+        logger.debug(f"删除{user}失败{repr(e)}")
+        return
+    else:
+        return del_info
+    
+
 
 if __name__ == "__main__":
     """test functions 测试前请注释掉有关logger的部分"""
