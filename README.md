@@ -34,6 +34,7 @@
   - 注意：当该需要添加的用户不存在时，会自动创建新的用户
 - 向机器人发送`用户列表`命令，会列出所有当前已暂存的用户
   - 仅限SUPERUSER(nonebot2项目的拥有者，请查阅nonebot相关设置)
+
 ## FAQ
 
 - 如果你遇到了任何问题，请先查看源项目的 [FAQ](https://github.com/mrcaidev/uestc-temperature/wiki/FAQ)
