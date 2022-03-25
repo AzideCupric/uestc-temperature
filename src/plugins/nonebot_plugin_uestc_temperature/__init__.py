@@ -8,8 +8,10 @@ from nonebot.typing import T_State
 from .upload import Reporter
 from .userData import updateData, loadData
 
-import time
+from datetime import datetime,timedelta,timezone
 import re
+
+tz_utc_8 = timezone(timedelta(hours=8))
 
 temperature = on_command("体温上报", rule=to_me())
 
@@ -26,9 +28,8 @@ async def upload_temperature(user: Message = CommandArg()):
         await temperature.send(Message(f"即将填报用户:{user}"))
         result, state = reporter.run()
         if state == "无效Session id":
-            timeStr = time.strftime(
-                "%Y-%m-%d %H:%M:%S", time.localtime(user_data["updateTime"])
-            )
+            timeStamp=datetime.fromtimestamp(user_data["updateTime"],tz_utc_8)
+            timeStr = timeStamp.strftime("%Y-%m-%d %H:%M:%S")
             msg = f"用户：{user}\n无效的Session id:\n{user_data['Sid']}\n上次更新时间为{timeStr}\n请发送 更新id 命令进行更新"
         else:
             msg = f"填报状态：{state}\n" + ("请自行手动填报" if not result else "")
@@ -51,10 +52,11 @@ async def get_user_name(state: T_State, user_name: Message = CommandArg()):
             Message(f"不存在的用户：{user_name},继续发送Session Id将自动添加该用户\n或者发送 取消 中止")
         )
     else:
-        TimeStr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(user["updateTime"]))
+        timeStamp=datetime.fromtimestamp(user["updateTime"],tz_utc_8)
+        timeStr = timeStamp.strftime("%Y-%m-%d %H:%M:%S")
         Sid = user["Sid"]
         await updateID.send(
-            Message(f"{user_name}\nSession Id:{Sid}\n上次更新时间:{TimeStr}")
+            Message(f"{user_name}\nSession Id:{Sid}\n上次更新时间:{timeStr}")
         )
     state["update_user_name"] = user_name
 

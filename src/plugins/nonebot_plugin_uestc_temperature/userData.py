@@ -27,7 +27,6 @@ def updateData(user: str, Sid: str) -> bool:
 
             with open(user_json_path, "w", encoding="utf-8") as ud_write:
                 json.dump(allUser, ud_write, indent=4, ensure_ascii=False)
-
     except Exception as e:
         logger.error(repr(e))
         return False
