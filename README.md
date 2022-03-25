@@ -8,7 +8,7 @@
 [电子科技大学本科生自动健康打卡](https://github.com/mrcaidev/uestc-temperature)的nonebot-plugin版本
 
 ## 简介
-本项目可以作为您的nonebot机器人插件使用，根据您提供的 _SessionId_ 进行打卡服务
+本项目可以作为您的nonebot2机器人插件使用，根据您提供的 _SessionId_ 进行打卡服务
 
 基于[`NoneBot2`](https://github.com/nonebot/nonebot2) 与[`uestc-temperature`](https://github.com/mrcaidev/uestc-temperature)开发
 
@@ -23,7 +23,7 @@
 
 ## 使用方法
 
-- 部署您的 _nonebot2_机器人：前往nonebot2的[官方网站](https://v2.nonebot.dev)
+- 部署您的 _nonebot2_ 机器人：前往nonebot2的[官方网站](https://v2.nonebot.dev)
 - 将本仓库中的`src/plugins`目录下的`nonebot_plugin_uestc_temperature`文件夹拷贝至您部署好的nonebot2的插件目录下
 - 在nonebot2部署目录下的`bot.py`文件中启用该插件（请到nonebot2的[官方网站](https://v2.nonebot.dev)学习启用方法）
   - 注意：在您的nonebot2项目中的`pyproject.toml`文件中默认会加载`src/plugins`下的所有非下划线`_`开头的插件，该步骤通常可以跳过
