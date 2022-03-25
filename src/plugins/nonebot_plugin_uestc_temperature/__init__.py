@@ -9,6 +9,7 @@ from .upload import Reporter
 from .userData import updateData, loadData
 
 import time
+import re
 
 temperature = on_command("体温上报", rule=to_me())
 
@@ -57,6 +58,13 @@ async def get_user_name(state: T_State, user_name: str = CommandArg()):
 
 @updateID.got("session_id", "新的成电智慧学工Session Id：")
 async def update_id(state: T_State, session_id: str = ArgStr()):
+    if session_id == "取消":
+        await updateID.finish(Message("已中止更新"))
+    pattern = re.compile(r'^[A-Za-z0-9]{8}(-[A-Za-z0-9]{4}){3}-[A-Za-z0-9]{12}')
+    re_result=pattern.match(session_id)
+    if not re_result:
+        logger.info(f"reject {session_id}")
+        await updateID.reject(Message("输入的数据不满足SessionId格式！请检查后再次输入"))
     logger.info(f"get id:{session_id}")
     update_user_name = state["update_user_name"]
     status = updateData(update_user_name, session_id)
