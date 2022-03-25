@@ -3,9 +3,10 @@ from nonebot.params import ArgStr, CommandArg
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent
 from nonebot import logger
+from nonebot.typing import T_State
 
 from .upload import Reporter
-from .userData import addData, loadData
+from .userData import updateData, loadData
 
 import time
 
@@ -32,24 +33,32 @@ async def upload_temperature(user: str = CommandArg()):
             msg = f"填报状态：{state}\n" + ("请自行手动填报" if not result else "")
     logger.info(msg)
     await temperature.finish(Message(msg))
-    """@temperature.got("session_id", "成电智慧学工Session Id：")
-async def upload_temperature(session_id: str = ArgStr()):
-    logger.info(f"get id:{session_id}")
-    reporter = Reporter(session_id)
-    await temperature.send(Message(f"已接收:{session_id}"))
-    result, state = reporter.run()
-    if state == '无效Session id':
-        lastUpdateTime=loadData()
-        msg= f"无效的Session id:\n{session_id}\n请发送 更新id 命令进行更新"
-    else:
-        msg = f"填报状态：{state}\n" + ("请自行手动填报" if not result else "")
-    logger.info(f"{msg}")
-    await temperature.finish(Message(msg))"""
 
 
 updateID = on_command("更新id", rule=to_me())
 
 
-@updateID.got("session_id", "成电智慧学工Session Id：")
-async def update_id(session_id: str = ArgStr()):
+@updateID.handle()
+async def get_user_name(state: T_State, user_name: str = CommandArg()):
+    logger.info(f"get name:{user_name}")
+    user = loadData(user_name)
+    if user["Sid"] == "err-404":
+        await updateID.send(
+            Message(f"不存在的用户：{user_name},继续发送Session Id将自动添加该用户\n或者发送 取消 中止")
+        )
+    else:
+        TimeStr = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(user["updateTime"]))
+        Sid = user["Sid"]
+        await updateID.send(
+            Message(f"{user_name}\n上次更新Session Id:{Sid}\n的时间为{TimeStr}")
+        )
+    state["update_user_name"] = user_name
+
+
+@updateID.got("session_id", "新的成电智慧学工Session Id：")
+async def update_id(state: T_State, session_id: str = ArgStr()):
     logger.info(f"get id:{session_id}")
+    update_user_name = state["update_user_name"]
+    status = updateData(update_user_name, session_id)
+    assert loadData(update_user_name)["Sid"] == session_id
+    await updateID.send(Message(f"更新情况:{update_user_name} {status}"))
