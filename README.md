@@ -13,6 +13,7 @@
 基于[`NoneBot2`](https://github.com/nonebot/nonebot2) 与[`uestc-temperature`](https://github.com/mrcaidev/uestc-temperature)开发
 
 开发初衷源于懒得点开小程序打卡，故直接将步骤在QQ内完成（躺）
+故请确保使用时当前体温属于安全范围内！
 
 修改很少，只是将源程序接入nonebot之中
 
