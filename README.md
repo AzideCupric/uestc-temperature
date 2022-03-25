@@ -30,7 +30,7 @@
   - 注意：在您的nonebot2项目中的`pyproject.toml`文件中默认会加载`src/plugins`下的所有非下划线`_`开头的插件，该步骤通常可以跳过
 - 向机器人发送`体温上报 user_name`命令完成体温填报，例：`体温上报 kaltsit`
   - 注意：使用该命令之前需要保证该`user_name`存在。如不存在，请看命令`更新id`
-- 向机器人发送`更新id user_name`命令，并提供Session Id完成用户信息的更新
+- 向机器人发送`更新id user_name`命令，并提供Session Id完成用户信息的更新，例：`更新id amiya`
   - 注意：当该需要添加的用户不存在时，会自动创建新的用户
 ## FAQ
 
