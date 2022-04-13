@@ -52,7 +52,7 @@ class Reporter:
         elif status["appliedTimes"] != 0:
             return (True, "重复填报")
         elif status["schoolStatus"] == 0:
-            return False, "离校期间，请自行填报或者修改源代码启用离校填报功能"
+            return False, "离校期间，请修改源代码启用离校填报功能"
             # response = self.__request("unreturned")
         elif status["schoolStatus"] == 1:
             response = self.__request("returned")
