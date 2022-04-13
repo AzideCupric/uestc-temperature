@@ -64,15 +64,16 @@ async def get_user_name(state: T_State, user_name: Message = CommandArg()):
     state["update_user_name"] = user_name
 
 
-@updateID.got("session_id", "新的成电智慧学工Session Id：")
+@updateID.got("session_id", "含有新的成电智慧学工Session Id链接：")
 async def update_id(state: T_State, session_id: str = ArgStr()):
     if session_id == "取消":
         await updateID.finish(Message("已中止更新"))
-    pattern = re.compile(r"^[A-Za-z0-9]{8}(-[A-Za-z0-9]{4}){3}-[A-Za-z0-9]{12}")
-    re_result = pattern.match(session_id)
+    pattern = re.compile(r"[A-Za-z0-9]{8}(-[A-Za-z0-9]{4}){3}-[A-Za-z0-9]{12}")
+    re_result = pattern.search(session_id)
     if not re_result:
         logger.info(f"reject {session_id}")
         await updateID.reject(Message("输入的数据不满足SessionId格式！请检查后再次输入"))
+    session_id = re_result.group(0)
     logger.debug(f"get id:{session_id}")
     update_user_name = str(state["update_user_name"])
     status = updateData(update_user_name, session_id)
