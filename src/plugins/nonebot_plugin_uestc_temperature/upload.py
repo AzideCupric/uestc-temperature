@@ -23,7 +23,7 @@ class Reporter:
         ) as fr:
             self.__sites = json.load(fr)
 
-    def __init_session(self, cookie: str) -> None:
+    async def __init_session(self, cookie: str) -> None:
         self.__session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(
             max_retries=Retry(
@@ -35,7 +35,7 @@ class Reporter:
         self.__session.cookies.update({"SESSION": cookie})
         self.__session.headers.update({"content-type": "application/json"})
 
-    def __request(self, api: str) -> dict:
+    async def __request(self, api: str) -> dict:
         site = self.__sites[api]
         return self.__session.request(
             method=site["method"],
@@ -44,8 +44,8 @@ class Reporter:
             json=site["data"],
         ).json()
 
-    def run(self) -> tuple[bool, str]:
-        status = self.__request("status")["data"]
+    async def run(self) -> tuple[bool, str]:
+        status = await self.__request("status")["data"]
 
         if status == None:
             return False, "无效Session id"
